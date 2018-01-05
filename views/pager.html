@@ -1,0 +1,70 @@
+{{define "pager"}}
+<style type="text/css">
+  #size,
+  #nums {
+    width: 2em;
+    height: 1.2em;
+    margin: 0 2px;
+    text-align: center;
+    border: 1px solid black;
+  }
+</style>
+
+{{if gt .P.Total 1}}
+<ul class="pagination">
+  <li {{if eq .P.Index 1}} class="disabled" {{end}}>
+    <a href="{{.P.FirstPage}}">
+      <i class="material-icons">first_page</i>
+    </a>
+    <a href="{{.P.PrevPage}}">
+      <i class="material-icons">chevron_left</i>
+    </a>
+  </li>
+
+  {{range $index,$num := .P.NumberRange}}
+  <li {{if eq $.P.Index $num}} class="active" {{end}}>
+    <a href="{{$.P.CurrentPage $num}}">{{$num}}</a>
+  </li>
+  {{end}}
+
+  <li {{if eq .P.Index .P.Total}} class="disabled" {{end}}>
+    <a href="{{.P.NextPage}}">
+      <i class="material-icons">chevron_right</i>
+    </a>
+    <a href="{{.P.LastPage}}">
+      <i class="material-icons">last_page</i>
+    </a>
+  </li>
+</ul>
+
+Current Page: {{.P.Index}} | Currently show {{.Start}} ~ {{.End}} rows | Total rows: {{.P.Rows}} | Total pages:{{.P.Total}}
+<form action="/" method="get">
+  <input type="text" id="size" value="{{.P.Size}}" /> /Page |
+  <input type="text" id="nums" value="{{.P.Numbers}}" /> Page numbers
+</form>
+{{end}}
+
+<script>
+  var size = document.getElementById("size");
+  var nums = document.getElementById("nums");
+  size.addEventListener('keydown', go)
+  nums.addEventListener('keydown', go)
+
+  function go(e) {
+    if (e.keyCode == 13) {
+      var s = size.value;
+      var n = nums.value;
+      var url = "/?index=1&size=" + s + "&nums=" + n;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          window.location = url;
+        }
+      }
+      xhr.send(null);
+    }
+  } 
+</script> 
+{{end}}
